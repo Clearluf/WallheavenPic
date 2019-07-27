@@ -1,4 +1,4 @@
-package com.joe.demo;
+﻿package com.joe.demo;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -21,7 +21,6 @@ import org.jsoup.select.Elements;
 public class Wallheaven {
 	/**
 	 * 下载wallheaven图片到指定目录
-	 *
 	 * @param filePath 文件路径
 	 * @param imgUrl   图片URL
 	 */
