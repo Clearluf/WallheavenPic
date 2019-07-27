@@ -7,5 +7,6 @@
 	</classpathentry>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="lib" path="D:/Study/Jars/jsoup-1.12.1.jar"/>
+	<classpathentry kind="lib" path="D:/Study/Jars/htmlunit-2.35.0-OSGi.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

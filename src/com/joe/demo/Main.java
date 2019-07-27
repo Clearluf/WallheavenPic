@@ -5,18 +5,44 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.html.DomElement;
+import com.gargoylesoftware.htmlunit.html.DomNodeList;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
+
 import java.io.IOException;
+import java.util.Scanner;
 public class Main {
     public static void main(String[] args) throws IOException {
-    	String url="https://wallhaven.cc/";
-    	Connection connect = Jsoup.connect(url);
-    	// 得到Document对象
-        Document document = connect.get();
-        Elements imgs=document.select("a[href*=//wallhaven.cc/w/]");
-        for (Element element: imgs) {
-            //获取每个img标签URL "abs:"表示绝对路径
-            String imgSrc = element.attr("abs:href");
-            System.out.println(imgSrc);
-        }
+//    	WebClient wc=new WebClient();
+//    	wc.getOptions().setCssEnabled(true);
+//    	wc.getOptions().setJavaScriptEnabled(true);
+//    	wc.waitForBackgroundJavaScript(10000);
+//    	HtmlPage page=wc.getPage("https://tuchong.com/tags/%E7%A7%81%E6%88%BF");
+//    	System.out.println(page.asXml());
+//    	DomNodeList<DomElement> elementsByTagNameSubmit = page.getElementsByTagName("li");
+//    	System.out.println(elementsByTagNameSubmit.size());
+//    	for(int i=0;i<elementsByTagNameSubmit.size();i++) {
+//    		
+//    	}
+    	while(true) {
+    		Scanner scan=new Scanner(System.in);
+    		System.out.println("输入网址：");
+        	String url=scan.nextLine();
+        	Document document = (Jsoup.connect(url)
+                    .get());
+        	// 得到Document对象
+            //System.out.println(document);
+            //System.out.println(document); [href*=rqt_id]
+            Elements imgs=document.select("img[src*=https://photo.tuchong.com]");
+            //System.out.println(imgs);
+            for (Element element: imgs) {
+                //获取每个img标签URL "abs:"表示绝对路径
+                String imgSrc = element.attr("abs:src");
+                new DownPic().downImages("d:/tuchong", imgSrc);
+                System.out.print("-");
+            }
+            System.out.println("下载完成");
+    	}
     }
 }
