@@ -12,6 +12,8 @@ import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Scanner;
+
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -21,6 +23,7 @@ import org.jsoup.select.Elements;
 public class Wallheaven {
 	/**
 	 * 下载wallheaven图片到指定目录
+	 * 
 	 * @param filePath 文件路径
 	 * @param imgUrl   图片URL
 	 */
@@ -100,15 +103,21 @@ public class Wallheaven {
 
 	public static void main(String[] args) throws IOException {
 		// 点击下载大图而非预览图
+		int pages = 0;
+		String netpage = null;
+		Scanner s = new Scanner(System.in);
+		System.out.println("网页地址：");
+		netpage = s.nextLine();
+		System.out.println("图片页数：");
+		pages = s.nextInt();
 
 		ArrayList<String> picsUrl = new ArrayList<String>();
-		int i = 1;
-		while (i <= 20) {
-			String url = "https://wallhaven.cc/search?q=id%3A222&categories=111&purity=100&atleast=1920x1080&ratios=16x9&sorting=favorites&order=desc&page="
-					+ i;
-			System.out.println("从" + url + "中开始获取图片URL：");
+		int i = 1;// 下载的页数
+		int picNum = 0;// 图片总数
+		while (i <= pages) {
+			String url = netpage.substring(0, netpage.length() - 1) + i;
+			System.out.println("从第" + i + "页中开始获取图片URL");
 			Connection connect = Jsoup.connect(url);
-
 			// 得到Document对象
 			Document document = connect.get();
 			Elements imgs = document.select("a[href*=//wallhaven.cc/w/]");
@@ -117,22 +126,19 @@ public class Wallheaven {
 				String imgSrc = element.attr("abs:href");
 				picsUrl.add(imgSrc);
 			}
-
-			int picNum = picsUrl.size();
-			System.out.println("获取完毕，总计" + picNum + "张图片");
-			System.out.println("开始下载：");
-			Date d1 = new Date();
-			for (int k = 0; k < picNum; k++) {
-				DownloadImgLinkFromUrl(picsUrl.get(i));
-				System.out.println("第" + (k + 1) + "张图片下载完成");
-			}
-			Date d2 = new Date();
-			long time = (d2.getTime() - d1.getTime()) / 1000;
-			System.out.println(url + "中的所有图片下载完毕,用时" + time + "秒");
-			System.out.println(
-					"***************************************************************************************************************************************************************************************");
 			i++;
 		}
 
+		picNum = picsUrl.size();
+		System.out.println("获取完毕，总计" + picNum + "张图片");
+		System.out.println("开始下载：");
+		Date d1 = new Date();
+		for (int k = 0; k < picNum; k++) {
+			DownloadImgLinkFromUrl(picsUrl.get(k));
+			System.out.println("第" + (k + 1) + "张图片下载完成");
+		}
+		Date d2 = new Date();
+		long time = (d2.getTime() - d1.getTime()) / 1000;
+		System.out.println("所有图片下载完毕,用时" + time + "秒");
 	}
 }
