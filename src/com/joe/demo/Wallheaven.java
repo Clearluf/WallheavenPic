@@ -10,8 +10,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
-import java.util.Scanner;
-
+import java.util.ArrayList;
+import java.util.Date;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -19,98 +19,121 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 public class Wallheaven {
-    /**
-     * ÏÂÔØwallheavenÍ¼Æ¬µ½Ö¸¶¨Ä¿Â¼
-     *
-     * @param filePath ÎÄ¼şÂ·¾¶
-     * @param imgUrl   Í¼Æ¬URL
-     */
-    public static void downImages(String filePath, String imgUrl) {
-        // ÈôÖ¸¶¨ÎÄ¼ş¼ĞÃ»ÓĞ£¬ÔòÏÈ´´½¨
-        File dir = new File(filePath);
-        if (!dir.exists()) {
-            dir.mkdirs();
-        }
-        // ½ØÈ¡Í¼Æ¬ÎÄ¼şÃû
-        String fileName = imgUrl.substring(imgUrl.lastIndexOf('/') + 1, imgUrl.length());
-        try {
-            // ÎÄ¼şÃûÀïÃæ¿ÉÄÜÓĞÖĞÎÄ»òÕß¿Õ¸ñ£¬ËùÒÔÕâÀïÒª½øĞĞ´¦Àí¡£µ«¿Õ¸ñÓÖ»á±»URLEncoder×ªÒåÎª¼ÓºÅ
-            String urlTail = URLEncoder.encode(fileName, "UTF-8");
-            // Òò´ËÒª½«¼ÓºÅ×ª»¯ÎªUTF-8¸ñÊ½µÄ%20
-            imgUrl = imgUrl.substring(0, imgUrl.lastIndexOf('/') + 1) + urlTail.replaceAll("\\+", "\\%20");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        // Ğ´³öµÄÂ·¾¶
-        File file = new File(filePath + File.separator + fileName);
-        try {
-            // »ñÈ¡Í¼Æ¬URL
-        	URL url = new URL(imgUrl);
-            // »ñµÃÁ¬½Ó
-            URLConnection connection = url.openConnection();
-            // ÉèÖÃ10ÃëµÄÏàÓ¦Ê±¼ä
-            connection.setConnectTimeout(10 * 1000);
-            // »ñµÃÊäÈëÁ÷
-            InputStream in = connection.getInputStream();
-            // »ñµÃÊä³öÁ÷
-            BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(file));
-            // ¹¹½¨»º³åÇø
-            byte[] buf = new byte[1024];
-            int size;
-            // Ğ´Èëµ½ÎÄ¼ş
-            while (-1 != (size = in .read(buf))) {
-                out.write(buf, 0, size);
-            }
-            out.close(); in .close();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-    static void DownloadImgLinkFromUrl(String url) {
+	/**
+	 * ä¸‹è½½wallheavenå›¾ç‰‡åˆ°æŒ‡å®šç›®å½•
+	 *
+	 * @param filePath æ–‡ä»¶è·¯å¾„
+	 * @param imgUrl   å›¾ç‰‡URL
+	 */
+	public static void downImages(String filePath, String imgUrl) {
+		// è‹¥æŒ‡å®šæ–‡ä»¶å¤¹æ²¡æœ‰ï¼Œåˆ™å…ˆåˆ›å»º
+		File dir = new File(filePath);
+		if (!dir.exists()) {
+			dir.mkdirs();
+		}
+		// æˆªå–å›¾ç‰‡æ–‡ä»¶å
+		String fileName = imgUrl.substring(imgUrl.lastIndexOf('/') + 1, imgUrl.length());
+		try {
+			// æ–‡ä»¶åé‡Œé¢å¯èƒ½æœ‰ä¸­æ–‡æˆ–è€…ç©ºæ ¼ï¼Œæ‰€ä»¥è¿™é‡Œè¦è¿›è¡Œå¤„ç†ã€‚ä½†ç©ºæ ¼åˆä¼šè¢«URLEncoderè½¬ä¹‰ä¸ºåŠ å·
+			String urlTail = URLEncoder.encode(fileName, "UTF-8");
+			// å› æ­¤è¦å°†åŠ å·è½¬åŒ–ä¸ºUTF-8æ ¼å¼çš„%20
+			imgUrl = imgUrl.substring(0, imgUrl.lastIndexOf('/') + 1) + urlTail.replaceAll("\\+", "\\%20");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		// å†™å‡ºçš„è·¯å¾„
+		File file = new File(filePath + File.separator + fileName);
+		try {
+			// è·å–å›¾ç‰‡URL
+			URL url = new URL(imgUrl);
+			// è·å¾—è¿æ¥
+			URLConnection connection = url.openConnection();
+			// è®¾ç½®10ç§’çš„ç›¸åº”æ—¶é—´
+			connection.setConnectTimeout(10 * 1000);
+			// è·å¾—è¾“å…¥æµ
+			InputStream in = connection.getInputStream();
+			// è·å¾—è¾“å‡ºæµ
+			BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(file));
+			// æ„å»ºç¼“å†²åŒº
+			byte[] buf = new byte[1024];
+			int size;
+			// å†™å…¥åˆ°æ–‡ä»¶
+			while (-1 != (size = in.read(buf))) {
+				out.write(buf, 0, size);
+			}
+			out.close();
+			in.close();
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
-        // ÀûÓÃJsoup»ñµÃÁ¬½Ó	
-        Connection connect = Jsoup.connect(url);
-        try {
-            // µÃµ½Document¶ÔÏó
-            Document document = connect.get();
-            // ²éÕÒËùÓĞimg±êÇ©
-            Elements imgs = document.getElementsByTag("img");
-            System.out.println("¹²¼ì²âµ½ÏÂÁĞÍ¼Æ¬URL£º");
-            System.out.println("¿ªÊ¼ÏÂÔØ");
-            // ±éÀúimg±êÇ©²¢»ñµÃsrcµÄÊôĞÔ
-            int i=1;
-            for (Element element: imgs) {
-                //»ñÈ¡Ã¿¸öimg±êÇ©URL "abs:"±íÊ¾¾ø¶ÔÂ·¾¶
-                String imgSrc = element.attr("abs:src");
-                if(imgSrc.contains("logo")||imgSrc.contains("user/avatar")) {
-                	continue;
-                }
-                // ´òÓ¡URL
-                System.out.println("Í¼Æ¬:"+imgSrc);
-                //ÏÂÔØÍ¼Æ¬µ½±¾µØ
-                Wallheaven.downImages("d:/wallheaven", imgSrc);
-                i++;
-            }
-            System.out.println("ÏÂÔØÍê³É");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    
-    }
-    public static void main(String[] args) throws IOException {
+	/**
+	 * ä»ç½‘é¡µçš„urlä¸­è·å–å›¾ç‰‡url
+	 *
+	 * @param url ç½‘é¡µurl
+	 */
+	static void DownloadImgLinkFromUrl(String url) {
+		ArrayList<String> picsUrl = new ArrayList<String>();
+		// åˆ©ç”¨Jsoupè·å¾—è¿æ¥
+		Connection connect = Jsoup.connect(url);
+		try {
+			// å¾—åˆ°Documentå¯¹è±¡
+			Document document = connect.get();
+			// æŸ¥æ‰¾æ‰€æœ‰imgæ ‡ç­¾
+			Elements imgs = document.getElementsByTag("img");
 
-    	String url="https://wallhaven.cc/random";
-    	Connection connect = Jsoup.connect(url);
-    	// µÃµ½Document¶ÔÏó
-        Document document = connect.get();
-        Elements imgs=document.select("a[href*=//wallhaven.cc/w/]");
-        for (Element element: imgs) {
-            //»ñÈ¡Ã¿¸öimg±êÇ©URL "abs:"±íÊ¾¾ø¶ÔÂ·¾¶
-            String imgSrc = element.attr("abs:href");
-            DownloadImgLinkFromUrl(imgSrc);
-        }
+			// éå†imgæ ‡ç­¾å¹¶è·å¾—srcçš„å±æ€§
+			for (Element element : imgs) {
+				// è·å–æ¯ä¸ªimgæ ‡ç­¾URL "abs:"è¡¨ç¤ºç»å¯¹è·¯å¾„
+				String imgSrc = element.attr("abs:src");
+				if (imgSrc.contains("logo") || imgSrc.contains("user/avatar")) {
+					continue;
+				}
+				Wallheaven.downImages("d:/wallheaven", imgSrc);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
-    }
+	public static void main(String[] args) throws IOException {
+		// ç‚¹å‡»ä¸‹è½½å¤§å›¾è€Œéé¢„è§ˆå›¾
+
+		ArrayList<String> picsUrl = new ArrayList<String>();
+		int i = 1;
+		while (i <= 20) {
+			String url = "https://wallhaven.cc/search?q=id%3A222&categories=111&purity=100&atleast=1920x1080&ratios=16x9&sorting=favorites&order=desc&page="
+					+ i;
+			System.out.println("ä»" + url + "ä¸­å¼€å§‹è·å–å›¾ç‰‡URLï¼š");
+			Connection connect = Jsoup.connect(url);
+
+			// å¾—åˆ°Documentå¯¹è±¡
+			Document document = connect.get();
+			Elements imgs = document.select("a[href*=//wallhaven.cc/w/]");
+			for (Element element : imgs) {
+				// è·å–æ¯ä¸ªimgæ ‡ç­¾URL "abs:"è¡¨ç¤ºç»å¯¹è·¯å¾„
+				String imgSrc = element.attr("abs:href");
+				picsUrl.add(imgSrc);
+			}
+
+			int picNum = picsUrl.size();
+			System.out.println("è·å–å®Œæ¯•ï¼Œæ€»è®¡" + picNum + "å¼ å›¾ç‰‡");
+			System.out.println("å¼€å§‹ä¸‹è½½ï¼š");
+			Date d1 = new Date();
+			for (int k = 0; k < picNum; k++) {
+				DownloadImgLinkFromUrl(picsUrl.get(i));
+				System.out.println("ç¬¬" + (k + 1) + "å¼ å›¾ç‰‡ä¸‹è½½å®Œæˆ");
+			}
+			Date d2 = new Date();
+			long time = (d2.getTime() - d1.getTime()) / 1000;
+			System.out.println(url + "ä¸­çš„æ‰€æœ‰å›¾ç‰‡ä¸‹è½½å®Œæ¯•,ç”¨æ—¶" + time + "ç§’");
+			System.out.println(
+					"***************************************************************************************************************************************************************************************");
+			i++;
+		}
+
+	}
 }
